@@ -1,7 +1,7 @@
 CREATE TABLE material_type (
     id INT PRIMARY KEY,
-    name VARCHAR(255) NOT NULL,
-    percent INT NOT NULL CHECK (percent BETWEEN 0 AND 100)
+    name text NOT NULL,
+    percent int not null
 );
 
 INSERT INTO material_type (id, name, percent) VALUES
@@ -13,8 +13,8 @@ INSERT INTO material_type (id, name, percent) VALUES
 
 CREATE TABLE production_type (
     id INT PRIMARY KEY,
-    name VARCHAR(255) NOT NULL,
-    coeff DECIMAL(10,2) NOT NULL
+    name text not null,
+	coeff float not null
 );
 
 INSERT INTO production_type (id, name, coeff) VALUES
@@ -25,14 +25,14 @@ INSERT INTO production_type (id, name, coeff) VALUES
 
 CREATE TABLE partner (
     id INT PRIMARY KEY,
-    partner_type VARCHAR(10) NOT NULL,
-    name VARCHAR(255) NOT NULL,
-    director VARCHAR(255) NOT NULL,
-    director_email VARCHAR(255) NOT NULL,
-    partner_phone VARCHAR(20) NOT NULL,
-    partner_legal_address TEXT NOT NULL,
-    inn VARCHAR(12) NOT NULL UNIQUE,
-    rating SMALLINT NOT NULL CHECK (rating BETWEEN 1 AND 10)
+    partner_type text not null,
+	name text not null,
+	director text not null,
+	director_email text not null,
+	partner_phone text not null,
+	partner_legal_address text not null,
+	inn text not null,
+	rating int not null
 );
 
 INSERT INTO partner (id, partner_type, name, director, director_email, partner_phone, partner_legal_address, inn, rating) VALUES
@@ -44,10 +44,10 @@ INSERT INTO partner (id, partner_type, name, director, director_email, partner_p
 
 CREATE TABLE production (
     id INT PRIMARY KEY,
-    type_id INT NOT NULL,
-    name VARCHAR(255) NOT NULL,
-    articul VARCHAR(20) NOT NULL UNIQUE,
-    min_price DECIMAL(12,2) NOT NULL,
+    type_id int not null,
+	name text not null,
+	articul text not null,
+	min_price float not null,
     CONSTRAINT fk_production_type FOREIGN KEY (type_id) REFERENCES production_type(id)
 );
 
@@ -60,10 +60,10 @@ INSERT INTO production (id, type_id, name, articul, min_price) VALUES
 
 CREATE TABLE partner_production (
     id INT PRIMARY KEY,
-    production_id INT NOT NULL,
-    partner_id INT NOT NULL,
-    quantity INT NOT NULL CHECK (quantity > 0),
-    sell_date DATE NOT NULL,
+    production_id int not null,
+	partner_id int not null,
+	quantity bigint not null,
+	sell_date date not null,
     CONSTRAINT fk_production FOREIGN KEY (production_id) REFERENCES production(id),
     CONSTRAINT fk_partner FOREIGN KEY (partner_id) REFERENCES partner(id)
 );

@@ -7,14 +7,14 @@ public class MainFormDAO {
     public List<MainFormDTO> getAllRecords() {
         List<MainFormDTO> records = new ArrayList<>();
 
-        String url = "jdbc:postgresql://localhost:5433/postgres";
-        String user = "postgres";
-        String passwd = "test";
+        String url = "jdbc:postgresql://localhost:5432/postgres";
+        String user = "observer";
+        String passwd = "gomodrilnya";
 
         try (Connection connection = DriverManager.getConnection(url, user, passwd)) {
 
             String sql = """
-                select id, prefix, name, director, email, partner_phone, partner_legal_adress, inn, rating,
+                select id, partner_type, name, director, director_email, partner_phone, partner_legal_address, inn, rating,
                  CASE
                                  WHEN amount <= 10000 THEN 0
                                  WHEN amount > 10000 AND amount <= 50000 THEN 5
@@ -22,9 +22,9 @@ public class MainFormDAO {
                                  WHEN amount > 300000 THEN 15
                              END AS discount
                              from 
-                (SELECT id, prefix, name, director, email, partner_phone, partner_legal_adress, inn, rating, 
+                (SELECT id, partner_type, name, director, director_email, partner_phone, partner_legal_address, inn, rating, 
                  (select sum (quantity) from partner_production pp where p.id = pp.partner_id) as amount                 
-                  FROM partners p) as source
+                  FROM partner p) as source
             """;
 
             try (PreparedStatement statement = connection.prepareStatement(sql);
@@ -33,7 +33,7 @@ public class MainFormDAO {
                 // Обработка результата
                 while (resultSet.next()) {
                     Integer id = resultSet.getInt("id");
-                    String type = resultSet.getString("prefix");
+                    String type = resultSet.getString("partner_type");
                     String name = resultSet.getString("name");
                     String director = resultSet.getString("director");
                     String phone = resultSet.getString("partner_phone");

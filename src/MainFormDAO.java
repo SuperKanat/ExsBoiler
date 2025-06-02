@@ -8,9 +8,9 @@ public class MainFormDAO {
 
     List<MainFormDTO> records = new ArrayList<>();
 
-    String url = "jdbc:postgresql://localhost:5433/postgres";
-    String user = "postgres";
-    String passwd = "test";
+    String url = "jdbc:postgresql://localhost:5432/postgres";
+    String user = "observer";
+    String passwd = "gomodrilnya";
 
     try(
     Connection connection = DriverManager.getConnection(url, user, passwd))
@@ -19,22 +19,22 @@ public class MainFormDAO {
 
         String sql = """
                     Select p.id,
-                    p.prefix,
+                    p.partner_type,
                     p.name,
                     p.director,
-                    p.email,
+                    p.director_email,
                     p.partner_phone,
-                    p.partner_legal_adress,
+                    p.partner_legal_address,
                     p.inn,
                     p.rating,
                     COALESCE(SUM(pp.quantity), 0) AS total_quantity
-                FROM partners p
+                FROM partner p
                 LEFT JOIN partner_production pp ON p.id=pp.partner_id
                 GROUP BY
                 p.id,
-                p.prefix,
+                p.partner_type,
                 p.name,
-                p.director,
+                p.director_email,
                 p.partner_phone,
                 p.rating
                 ORDER BY p.id;
@@ -45,7 +45,7 @@ public class MainFormDAO {
 
             while (resultSet.next()) {
                 Integer id = resultSet.getInt("id");
-                String type = resultSet.getString("prefix");
+                String type = resultSet.getString("partner_type");
                 String name = resultSet.getString("name");
                 String director = resultSet.getString("director");
                 String phone = resultSet.getString("partner_phone");

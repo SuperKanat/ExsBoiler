@@ -3,16 +3,24 @@ public class MainFormDTO {
     private String type;
     private String name;
     private String director;
+    private String address;
+    private String email;
     private String phone;
+    private String inn;
     private int rating;
     private int discount;
 
-    public MainFormDTO(int id, String type, String name, String director, String phone, int rating, int discount) {
+    // Конструктор, геттеры и сеттеры
+    public MainFormDTO(int id, String type, String name, String director, String address, String email, String phone,
+                       String inn, int rating, int discount) {
         this.id = id;
         this.type = type;
         this.name = name;
         this.director = director;
+        this.address = address;
+        this.email = email;
         this.phone = phone;
+        this.inn = inn;
         this.rating = rating;
         this.discount = discount;
     }
@@ -24,6 +32,7 @@ public class MainFormDTO {
     public void setId(int id) {
         this.id = id;
     }
+
 
     public String getType() {
         return type;
@@ -49,12 +58,36 @@ public class MainFormDTO {
         this.director = director;
     }
 
+    public String getAddress() {
+        return address;
+    }
+
+    public void setAddress(String address) {
+        this.address = address;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
     public String getPhone() {
         return phone;
     }
 
     public void setPhone(String phone) {
         this.phone = phone;
+    }
+
+    public String getInn() {
+        return inn;
+    }
+
+    public void setInn(String inn) {
+        this.inn = inn;
     }
 
     public int getRating() {
@@ -73,16 +106,4 @@ public class MainFormDTO {
         this.discount = discount;
     }
 
-    @Override
-    public String toString() {
-        return "MainFormDTO{" +
-                "id=" + id +
-                ", type='" + type + '\'' +
-                ", name='" + name + '\'' +
-                ", director='" + director + '\'' +
-                ", phone='" + phone + '\'' +
-                ", rating=" + rating +
-                ", discount=" + discount +
-                '}';
-    }
 }

@@ -1,10 +1,13 @@
 import javafx.application.Application;
-import javafx.beans.value.ObservableValue;
 import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.concurrent.Worker;
+import javafx.geometry.Insets;
 import javafx.scene.Scene;
+import javafx.scene.control.Button;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.web.WebEngine;
 import javafx.scene.web.WebView;
@@ -13,8 +16,10 @@ import netscape.javascript.JSObject;
 
 
 public class MainForm extends Application {
+
     private WebView webView;
     private MainFormDAO dao = new MainFormDAO();
+    private ListListener listListener;
 
     public static void main(String[] args) {
         launch(args);
@@ -22,20 +27,37 @@ public class MainForm extends Application {
 
     @Override
     public void start(Stage primaryStage) {
-        primaryStage.setTitle("Программный модуль учёта партнёров");
+
+
+        primaryStage.setTitle("Программный модуль учета партнеров");
 
         Image icon = new Image(getClass().getResourceAsStream("/image.png"));
 
+
         webView = new WebView();
-        updateWebView();
+        updateWebView(true);
 
         VBox root = new VBox();
+        root.setPadding(new Insets(10));
         ImageView logoView = new ImageView(icon);
         logoView.setFitWidth(100);
         logoView.setPreserveRatio(true);
 
-        root.getChildren().addAll(logoView, webView);
+
+        Button addButton = new Button("Добавить");
+        addButton.setOnAction(e -> {
+            EditPartnerForm.showEditDialog(null);
+            updateWebView(false);
+        });
+
+        StackPane buttonStackPane = new StackPane(addButton);
+
+        buttonStackPane.setPadding(new Insets(20));
+
+        root.getChildren().addAll(logoView, webView, buttonStackPane);
+
         Scene scene = new Scene(root);
+
         primaryStage.getIcons().add(icon);
         primaryStage.setScene(scene);
         primaryStage.show();
@@ -43,7 +65,8 @@ public class MainForm extends Application {
         webView.prefWidthProperty().bind(root.widthProperty());
     }
 
-    private void updateWebView() {
+    // Обновление содержимого WebView
+    public void updateWebView(boolean addListener) {
 
         var partners = dao.getAllRecords();
 
@@ -56,7 +79,7 @@ public class MainForm extends Application {
                     <style>
                         /* Стили для списка */
                         .list-container {
-                            width: 100%;                            
+                            width: 100%;
                             margin: 0 auto;
                             padding: 20px;
                             border: 2px solid #ccc;
@@ -74,12 +97,12 @@ public class MainForm extends Application {
                             background-color: #f9f9f9;
                         }
                 
-
+                
                         .list-item table {
                             width: 100%;
                             border-collapse: collapse;
                         }
-                        
+                
                         .list-item:hover {
                                     background-color: #67BA80; 
                         }
@@ -101,6 +124,7 @@ public class MainForm extends Application {
                     <div class="list-container">
                 
                 """);
+
 
         for (var partner : partners) {
             htmlContent.append("<div class=\"list-item\" onClick = \"window.listListener.clickItem(")
@@ -133,28 +157,44 @@ public class MainForm extends Application {
                 </html>
                 """);
 
-        WebEngine webEngine =webView.getEngine();
+        WebEngine webEngine = webView.getEngine();
 
+        final MainForm thisForm = this;
 
-        webEngine.getLoadWorker().stateProperty().addListener(
-                new ChangeListener() {
-                    @Override
-                    public void changed(ObservableValue observable, Object oldValue, Object newValue) {
-                        if (newValue != Worker.State.SUCCEEDED) { return; }
+        if (addListener) {
+            webEngine.getLoadWorker().stateProperty().addListener(
+                    new ChangeListener() {
+                        @Override
+                        public void changed(ObservableValue observable, Object oldValue, Object newValue) {
+                            if (newValue != Worker.State.SUCCEEDED) {
+                                return;
+                            }
 
-                        JSObject window = (JSObject) webEngine.executeScript("window");
-                        window.setMember("listListener", new ListListener());
+                            JSObject window = (JSObject) webEngine.executeScript("window");
+                            listListener = new ListListener(thisForm);
+                            window.setMember("listListener", listListener);
+                        }
                     }
-                }
-        );
+            );
+
+        }
 
         webEngine.loadContent(htmlContent.toString());
     }
 
     public static class ListListener {
 
+        MainForm form;
+
+        public ListListener(MainForm form) {
+            this.form = form;
+        }
+
         public void clickItem(int id) {
-            System.out.println("clickItem "+id +" called");
+
+            EditPartnerForm.showEditDialog(id);
+
+            form.updateWebView(false);
         }
     }
 }

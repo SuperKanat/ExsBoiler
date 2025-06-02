@@ -12,9 +12,7 @@ public class MainFormDAO {
     String user = "observer";
     String passwd = "gomodrilnya";
 
-    try(
-    Connection connection = DriverManager.getConnection(url, user, passwd))
-
+    try(Connection connection = DriverManager.getConnection(url, user, passwd))
     {
 
         String sql = """
